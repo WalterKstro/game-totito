@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import Square from "./components/Square"
 import Turn from "./components/Turn"
+import Modal from "./components/Modal"
 
 enum TURNS {
   'x' = 'X',
@@ -37,6 +38,8 @@ function App() {
   const [turn, setTurn] = useState<string>(TURNS.o)
   // the winner
   const [winner, setWinner] = useState<string | null>(null)
+  const [isEnd, setEnd] = useState<boolean>(false)
+
 
   // mark one position on board
   function handlerMarkPosition(index:number): void {
@@ -82,16 +85,36 @@ function App() {
     setTurn(turnOf)
   } 
 
+  // was last turn
+   function isLastTurn():boolean {
+    const listOfNull:string[] = positions.filter( position => position == null )
+    return listOfNull.length == 0
+  }
+
+  // new game
+  function handlerReset():void {
+    setPositions(Array(9).fill(null))
+    setTurn(TURNS.o)
+    setWinner(null)
+    setEnd(false)
+  }
+
   useEffect(() => {
-    if( handlerVerityWinner( positions ) ){
+    if (handlerVerityWinner( positions )) {
       setWinner(turn)
-    }else {
-      changeOfTurn(turn)
+      setEnd(true)
     }
+
+    isLastTurn() && setEnd(true)
+
+    changeOfTurn(turn)
+
   },[positions])
+
   
   return (
-    <main className="h-screen flex">
+    <>
+      <main className="h-screen flex relative">
       <div className="m-auto">
         <h1 className="mb-4 text-4xl text-center">Game Totito</h1>
         <section className="mb-2 w-[300px] h-[300px] grid grid-cols-3 grid-rows-3 gap-2">
@@ -112,7 +135,12 @@ function App() {
           <h2 className="flex justify-center gap-4 items-center text-xl">It's turn of : { <Turn turn={turn}/> }</h2>
         </section>
       </div>
+      <Modal 
+        winner={winner} 
+        isEnd={isEnd}
+        handlerReset={handlerReset}/>
     </main>
+    </>
   )
 }
 
