@@ -38,6 +38,7 @@ function App() {
   const [turn, setTurn] = useState<string>(TURNS.o)
   // the winner
   const [winner, setWinner] = useState<string | null>(null)
+  // end game
   const [isEnd, setEnd] = useState<boolean>(false)
 
 
@@ -46,7 +47,7 @@ function App() {
     const clonePositions = [...positions]
     clonePositions[index] = turn
 
-    if(!handlerVerityWinner(positions)){
+    if(!isEnd){
       isPositionAvailability(index) && setPositions(clonePositions)
     }
     
